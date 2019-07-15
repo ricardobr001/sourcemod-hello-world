@@ -1,6 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
-#include <sdkhooks>
+#include <clients>
 #include "include/events"
 
 #define PLUGIN_VERSION "1.0.0"
@@ -34,7 +34,22 @@ public Action onPlayerDeath(Event event, const char[]name, bool dontBroadcast) {
 	int victim = GetClientOfUserId(victimId);
 	GetClientName(victim, victimName, sizeof(victimName));
     
+    gainLife(attacker, weapon);
+
     PrintToChatAll("%s killed %s using %s!", attackerName, victimName, weapon);
     
     return Plugin_Continue;
+}
+
+public void gainLife(int playerId, char[] weapon) {
+    new playerHP = GetClientHealth(playerId);
+    new newHP = playerHP + 25;
+    
+    if (StrEqual(weapon, "ak47")) {
+        if (playerHP + 25 > 100) {
+            SetEntProp(playerId, Prop_Send, "m_iHealth", 100, 1);    
+        } else {
+            SetEntProp(playerId, Prop_Send, "m_iHealth", newHP, 1);
+        }
+    }
 }
